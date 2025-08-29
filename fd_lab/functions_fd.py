@@ -78,13 +78,6 @@ class SolverPoissonXY(object):
 
         # create solution matrix attribute
         self.solution = None
-
-    def dirichlet(self):
-        """
-        Apply Dirichlet boundary conditions to update the corresponding elements of the A matrix and b vector for the
-        mesh points along the Dirichlet boundaries.
-        """
-        # TODO - your code here
         
         # converts a list of floats to a list of ints
         def toint(lis):
@@ -98,11 +91,18 @@ class SolverPoissonXY(object):
         Rind = np.linspace(self.nx-1, self.n-1, self.ny)
         Rind = toint(Rind.tolist())
         
-        boundary_i = set(Bind+Tind+Lind+Rind) # set for uniqueness
+        # set of K indexes that are boundary points
+        self.boundary_i = set(Bind+Tind+Lind+Rind) 
         logger.debug("boundary indexes: %s", boundary_i)
 
+    def dirichlet(self):
+        """
+        Apply Dirichlet boundary conditions to update the corresponding elements of the A matrix and b vector for the
+        mesh points along the Dirichlet boundaries.
+        """
+        # TODO - your code here
 
-        for k in boundary_i:
+        for k in self.boundary_i:
             # assigns boundary indexes in a with 1, 0 otherwise
             self.a[k,:] = 0.0
             self.a[k,k] = 1.0
@@ -140,7 +140,7 @@ class SolverPoissonXY(object):
         internal mesh points.
         """
         # TODO - your code here
-        pass
+        
 
     def solve(self):
         """
