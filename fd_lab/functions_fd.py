@@ -67,6 +67,8 @@ class SolverPoissonXY(object):
         self.dy = self.y[1]-self.y[0]
         logger.info("delta x: %s", self.dx)
         logger.info("delta y: %s", self.dy)
+        if not np.isclose(self.dx, self.dy):
+            logger.warning("delta y and delta x not close!")
         
         # TODO: initialise linear algebra matrices (a,b)
         self.a = np.zeros((self.n,self.n))
@@ -153,18 +155,24 @@ class SolverPoissonXY(object):
         internal_i = n - self.boundary_i # internal point ind (K)
         logger.debug("Internal boundary points: %s", internal_i)
         
+        # assign stencil values at internal rows
         def stenciler(matrix, kval):
             matrix[kval, kval] = -4
             for n in [kval-1, kval+1, kval-self.nx, kval+self.nx]:
                 matrix[kval, n] = 1
-                
-                
-                
+        
+
+        
         for k in internal_i:
             stenciler(self.a, k)
-            
+            self.b[k] = (self.dx**2)*self.poisson_function(self.x[k%self.nx], self.y[k//self.nx])
+            logger.debug("Internal b value: %s", self.b[k])
+        
+        
         logger.debug("internal A matrix:\n%s", np.array2string(self.a, precision =1, suppress_small = True, max_line_width = 120))
         
+
+
 
     def solve(self):
         """
