@@ -5,13 +5,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-logger.setLevel(logging.Debug)
+logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 
-formatter = logging.Formatter('%(asctime)s-%(name)s - %(levelname)s-%(message)s')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(funcName)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
-logger.addHandler(ch)
+if not logger.handlers:
+    logger.addHandler(ch)
 
 
 class SolverPoissonXY(object):
@@ -53,9 +54,9 @@ class SolverPoissonXY(object):
         self.nx = int(round((xlim[1] - xlim[0])/delta +1))
         self.ny = int(round((ylim[1]-ylim[0])/delta+1))
         self.n = self.ny * self.nx
-        logger.debug("x points: %s", self.nx)
-        logger.debug("y points: %s", self.ny)
-        logger.debug("total points: %s", self.n)
+        logger.info("x points: %s", self.nx)
+        logger.info("y points: %s", self.ny)
+        logger.info("total points: %s", self.n)
         
         # TODO: calculate the x and y values/coordinates of mesh as one-dimensional numpy arrays
         self.x = np.linspace(xlim[0], xlim[1], self.nx)
@@ -95,16 +96,16 @@ class SolverPoissonXY(object):
             return [int(val) for val in lis]
                 
         # find indexes for boundary conditions (K = ...)
-        Bind = list(range(0, self.nx))
-        Tind = list(range(self.n-self.nx, self.n))
+        self.Bind = list(range(0, self.nx))
+        self.Tind = list(range(self.n-self.nx, self.n))
         Lind = np.linspace(0, self.n-self.nx, self.ny)
-        Lind = toint(Lind.tolist())
+        self.Lind = toint(Lind.tolist())
         Rind = np.linspace(self.nx-1, self.n-1, self.ny)
-        Rind = toint(Rind.tolist())
+        self.Rind = toint(Rind.tolist())
         
         # set of K indexes that are boundary points
-        self.boundary_i = set(Bind+Tind+Lind+Rind) 
-        logger.debug("boundary indexes: %s", boundary_i)
+        self.boundary_i = set(self.Bind+self.Tind+self.Lind+self.Rind) 
+        logger.debug("boundary indexes: %s", self.boundary_i)
 
     def dirichlet(self):
         """
@@ -119,16 +120,16 @@ class SolverPoissonXY(object):
             self.a[k,k] = 1.0
             
             # checks if dirichlet and performs appropriate boundary func for index
-            if k in Bind and self.bc_y0['type'] == 'dirichlet':
+            if k in self.Bind and self.bc_y0['type'] == 'dirichlet':
                 self.b[k] = self.bc_y0["function"](self.x[k%self.nx], self.y[0])
                 
-            elif k in Tind and self.bc_y1['type'] == 'dirichlet':
+            elif k in self.Tind and self.bc_y1['type'] == 'dirichlet':
                 self.b[k] = self.bc_y1['function'](self.x[k%self.nx], self.y[self.ny-1])
                 
-            elif k in Lind and self.bc_x0['type'] == 'dirichlet':
+            elif k in self.Lind and self.bc_x0['type'] == 'dirichlet':
                 self.b[k] = self.bc_x0['function'](self.x[0], self.y[k//self.nx])
                 
-            elif k in Rind and self.bc_x1['type'] == 'dirichlet':
+            elif k in self.Rind and self.bc_x1['type'] == 'dirichlet':
                 self.b[k] = self.bc_x1['function'](self.x[self.nx-1], self.y[k//self.nx])
                 
         logger.debug("b vector:\n%s", np.array2string(self.b, precision=3, suppress_small=True))
@@ -151,6 +152,7 @@ class SolverPoissonXY(object):
         internal mesh points.
         """
         # TODO - your code here
+        logger.info("Running internal")
         n = set(range(self.n))
         internal_i = n - self.boundary_i # internal point ind (K)
         logger.debug("Internal boundary points: %s", internal_i)
@@ -192,12 +194,31 @@ class SolverPoissonXY(object):
         """
 
         # TODO - your code here
+        logger.info("Running solve")
         self.dirichlet()
         self.internal()
         
-        self.u = np.linalg.solve(self.a, self.b)
+        u = np.linalg.solve(self.a, self.b)
         
-        logger.debug("U matrix: %s", n.array2string(self.u, precision = 3, suppress_small = True))
+        logger.debug("U matrix: %s", np.array2string(u, precision = 3, suppress_small = True))
+        
+        n = set(range(self.n))
+        internal_i = n - self.boundary_i # internal point ind (K)
+        intvals = []
+        ijindex = []
+        for i in internal_i:
+            intvals.append(u[i])
+            ijindex.append([i%self.nx, i//self.nx])
+            
+            
+        logger.debug("Internal Values: %s", intvals)
+        
+        logger.info("Internal index: %s",ijindex)
+        
+        logger.debug("Internal X Y values: %s", [[self.dx*val for val in sublist] for sublist in ijindex])
+        self.solution = np.reshape(u, (self.ny, self.nx))
+        
+        
         
         
         
