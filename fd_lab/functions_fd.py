@@ -90,34 +90,20 @@ class SolverPoissonXY(object):
         
 
         for k in boundary_i:
+            self.a[k,:] = 0
             self.a[k,k] = 1
-            if k in Bind:
+            if k in Bind and self.bc_y0['type'] == 'dirichlet':
                 self.b[k] = self.bc_y0["function"](self.x[k%self.nx], self.y[0])
                     
-            elif k in Tind:
+            elif k in Tind and self.bc_y1['type'] == 'dirichlet':
                 self.b[k] = self.bc_y1['function'](self.x[k%self.nx], self.y[self.ny-1])
                 
-            elif k in Lind:
-                self.b[k] = self.bc_x0['function'](self.x[0], self.y[k%self.ny])
+            elif k in Lind and self.bc_x0['type'] == 'dirichlet':
+                self.b[k] = self.bc_x0['function'](self.x[0], self.y[k//self.ny])
                 
-            elif k in Rind:
-                self.b[k] = self.bc_x1['function'](self.x[self.nx-1], self.y[k%self.ny])
-            
-                        
-                        
-            
-                
-        
-            
-                
-  
+            elif k in Rind and self.bc_x1['type'] == 'dirichlet':
+                self.b[k] = self.bc_x1['function'](self.x[self.nx-1], self.y[k//self.ny])
 
-            
-
-                
-            
-        
-        pass
 
     def neumann(self):
         """
