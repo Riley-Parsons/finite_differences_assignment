@@ -192,6 +192,14 @@ class SolverPoissonXY(object):
         """
 
         # TODO - your code here
+        self.dirichlet()
+        self.internal()
+        
+        self.u = np.linalg.solve(self.a, self.b)
+        
+        logger.debug("U matrix: %s", n.array2string(self.u, precision = 3, suppress_small = True))
+        
+        
         
 
     def plot_solution(self):
