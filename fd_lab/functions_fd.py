@@ -86,23 +86,28 @@ class SolverPoissonXY(object):
         """
         # TODO - your code here
         
+        # converts a list of floats to a list of ints
         def toint(lis):
             return [int(val) for val in lis]
                 
-
+        # find indexes for boundary conditions (K = ...)
         Bind = list(range(0, self.nx))
         Tind = list(range(self.n-self.nx, self.n))
         Lind = np.linspace(0, self.n-self.nx, self.ny)
         Lind = toint(Lind.tolist())
         Rind = np.linspace(self.nx-1, self.n-1, self.ny)
         Rind = toint(Rind.tolist())
-            
-        boundary_i = set(Bind+Tind+Lind+Rind)
         
+        boundary_i = set(Bind+Tind+Lind+Rind) # set for uniqueness
+        logger.debug("boundary indexes: %s", boundary_i)
+
 
         for k in boundary_i:
+            # assigns boundary indexes in a with 1, 0 otherwise
             self.a[k,:] = 0.0
             self.a[k,k] = 1.0
+            
+            # checks if dirichlet and performs appropriate boundary func for index
             if k in Bind and self.bc_y0['type'] == 'dirichlet':
                 self.b[k] = self.bc_y0["function"](self.x[k%self.nx], self.y[0])
                 
