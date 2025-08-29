@@ -53,7 +53,9 @@ class SolverPoissonXY(object):
         self.dy = self.y[1]-self.y[0]
         
         # TODO: initialise linear algebra matrices (a,b)
-
+        self.a = np.zeros((self.n,self.n))
+        self.b = np.zeros(self.n)
+        
         # store the four boundary conditions
         self.bc_x0 = bc_x0
         self.bc_x1 = bc_x1
