@@ -140,7 +140,8 @@ class SolverPoissonXY(object):
         internal mesh points.
         """
         # TODO - your code here
-        
+        n = set(range(self.n))
+        internal_i = n - self.boundary_i
 
     def solve(self):
         """
