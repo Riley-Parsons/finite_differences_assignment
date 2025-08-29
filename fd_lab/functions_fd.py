@@ -157,9 +157,20 @@ class SolverPoissonXY(object):
         
         # assign stencil values at internal rows
         def stenciler(matrix, kval):
-            matrix[kval, kval] = -4
+            
+            matrix[kval, :] = 0.0
+            matrix[kval, kval] = -4.0
+            
+            # check for wraparound
+            if (kval%self.nx < 1 or kval%self.nx > self.nx-2):
+                logger.critical("kval i index out of range")
+            
+            if (kval//self.nx < 1 or kval//self.nx > self.ny-2):
+                logger.critical("kval j index out of range")
+            
             for n in [kval-1, kval+1, kval-self.nx, kval+self.nx]:
                 matrix[kval, n] = 1
+                logger.debug("matrix i val = %s, j val = %s", n%self.nx, n//self.nx)
         
 
         
@@ -181,7 +192,7 @@ class SolverPoissonXY(object):
         """
 
         # TODO - your code here
-        pass
+        
 
     def plot_solution(self):
         """
