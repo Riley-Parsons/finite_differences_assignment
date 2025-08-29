@@ -57,10 +57,10 @@ class SolverPoissonXY(object):
         self.b = np.zeros(self.n)
         
         # store the four boundary conditions
-        self.bc_x0 = bc_x0
-        self.bc_x1 = bc_x1
-        self.bc_y0 = bc_y0
-        self.bc_y1 = bc_y1
+        self.bc_x0 = bc_x0 #left
+        self.bc_x1 = bc_x1 #right
+        self.bc_y0 = bc_y0 #bottom
+        self.bc_y1 = bc_y1 #top
 
         # equation corresponding to forcing function
         self.poisson_function = poisson_function
@@ -94,9 +94,7 @@ class SolverPoissonXY(object):
                 
         
         for n in range(0,self.n):
-            ind = 0
-            for y in self.y:
-                for x in self.x:
+            for ind in range(0,self.n):
                     if ind in Bind:
                         self.a[n,ind] = 1
                         
