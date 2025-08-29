@@ -48,7 +48,10 @@ class SolverPoissonXY(object):
         self.y = np.linspace(ylim[0], ylim[1], self.ny)
         
         # TODO: calculate the actual mesh spacing in x and y (dx, dy), may differ slightly from delta if not exactly divisible
-
+        # assumes nx and ny >1
+        self.dx = self.x[1]-self.x[0]
+        self.dy = self.y[1]-self.y[0]
+        
         # TODO: initialise linear algebra matrices (a,b)
 
         # store the four boundary conditions
