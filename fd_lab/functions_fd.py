@@ -85,19 +85,32 @@ class SolverPoissonXY(object):
         Tind = list(range(self.n-self.nx, self.n))
                 
  
-        Lind = np.linspace(0, self.n-self.x, self.y)
+        Lind = np.linspace(0, self.n-self.nx, self.ny)
         Lind = toint(Lind.tolist())
                 
    
-        Rind = np.linspace(self.x-1, self.n-1, self.y)
-        Rind = toint(Lind.tolist())
+        Rind = np.linspace(self.nx-1, self.n-1, self.ny)
+        Rind = toint(Rind.tolist())
                 
         
         for n in range(0,self.n):
             ind = 0
             for y in self.y:
                 for x in self.x:
-                    A[n, ind] = 0
+                    if ind in Bind:
+                        self.a[n,ind] = 1
+                        
+                    elif ind in Lind:
+                        self.a[n,ind] = 1
+                        
+                    elif ind in Rind:
+                        self.a[n,ind] = 1
+                        
+                    elif ind in Tind:
+                        self.a[n,ind] = 1
+                        
+                    else:
+                        self.a[n,ind] = 0
                 
         
             
