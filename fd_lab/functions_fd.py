@@ -44,7 +44,9 @@ class SolverPoissonXY(object):
         self.n = self.ny * self.nx
         
         # TODO: calculate the x and y values/coordinates of mesh as one-dimensional numpy arrays
-
+        self.x = np.linspace(xlim[0], xlim[1], self.nx)
+        self.y = np.linspace(ylim[0], ylim[1], self.ny)
+        
         # TODO: calculate the actual mesh spacing in x and y (dx, dy), may differ slightly from delta if not exactly divisible
 
         # TODO: initialise linear algebra matrices (a,b)
