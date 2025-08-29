@@ -77,38 +77,35 @@ class SolverPoissonXY(object):
         
         def toint(lis):
             return [int(val) for val in lis]
-
+                
 
         Bind = list(range(0, self.nx))
-                
-
         Tind = list(range(self.n-self.nx, self.n))
-                
- 
         Lind = np.linspace(0, self.n-self.nx, self.ny)
         Lind = toint(Lind.tolist())
-                
-   
         Rind = np.linspace(self.nx-1, self.n-1, self.ny)
         Rind = toint(Rind.tolist())
-                
+            
+        boundary_i = set(Bind+Tind+Lind+Rind)
         
-        for n in range(0,self.n):
-            for ind in range(0,self.n):
-                    if ind in Bind:
-                        self.a[n,ind] = 1
+
+        for k in boundary_i:
+            self.a[k,k] = 1
+            if k in Bind:
+                self.b[k] = self.bc_y0["function"](self.x[k%self.nx], self.y[0])
+                    
+            elif k in Tind:
+                self.b[k] = self.bc_y1['function'](self.x[k%self.nx], self.y[self.ny-1])
+                
+            elif k in Lind:
+                self.b[k] = self.bc_x0['function'](self.x[0], self.y[k%self.ny])
+                
+            elif k in Rind:
+                self.b[k] = self.bc_x1['function'](self.x[self.nx-1], self.y[k%self.ny])
+            
                         
-                    elif ind in Lind:
-                        self.a[n,ind] = 1
                         
-                    elif ind in Rind:
-                        self.a[n,ind] = 1
-                        
-                    elif ind in Tind:
-                        self.a[n,ind] = 1
-                        
-                    else:
-                        self.a[n,ind] = 0
+            
                 
         
             
