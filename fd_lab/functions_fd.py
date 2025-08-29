@@ -74,6 +74,49 @@ class SolverPoissonXY(object):
         mesh points along the Dirichlet boundaries.
         """
         # TODO - your code here
+        
+        def lines(side):
+            """ Helper function returning boundary indexes for various sides
+
+            Args:
+                side (_type_): _description_
+
+            Returns:
+                _type_: _description_
+            """
+            if side == "B":
+                app = list(range(0, self.nx))
+                
+            if side == "T":
+                app = list(range(self.n-self.nx, self.n))
+                
+            if side == "L":
+                app = np.linspace(0, self.n-self.x, self.y)
+                app = app.tolist()
+                
+            if side == "R":
+                app = np.linspace(self.x-1, self.n-1, self.y)
+                app = app.tolist()
+                
+            app = [int(val) for val in app] #convert to list of ints
+            return app
+        
+        for n in range(0,self.n):
+            ind = 0
+            for y in self.y:
+                for x in self.x:
+                    A[n, ind] = 0
+                
+        
+            
+                
+  
+
+            
+
+                
+            
+        
         pass
 
     def neumann(self):
