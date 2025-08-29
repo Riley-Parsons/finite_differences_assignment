@@ -53,6 +53,9 @@ class SolverPoissonXY(object):
         self.nx = int(round((xlim[1] - xlim[0])/delta +1))
         self.ny = int(round((ylim[1]-ylim[0])/delta+1))
         self.n = self.ny * self.nx
+        logger.debug("x points: %s", self.nx)
+        logger.debug("y points: %s", self.ny)
+        logger.debug("total points: %s", self.n)
         
         # TODO: calculate the x and y values/coordinates of mesh as one-dimensional numpy arrays
         self.x = np.linspace(xlim[0], xlim[1], self.nx)
@@ -62,6 +65,8 @@ class SolverPoissonXY(object):
         # assumes nx and ny >1
         self.dx = self.x[1]-self.x[0]
         self.dy = self.y[1]-self.y[0]
+        logger.info("delta x: %s", self.dx)
+        logger.info("delta y: %s", self.dy)
         
         # TODO: initialise linear algebra matrices (a,b)
         self.a = np.zeros((self.n,self.n))
@@ -72,6 +77,10 @@ class SolverPoissonXY(object):
         self.bc_x1 = bc_x1 #right
         self.bc_y0 = bc_y0 #bottom
         self.bc_y1 = bc_y1 #top
+        logger.debug("x0 condition: %s", self.bc_x0['type'])
+        logger.debug("x1 condition: %s", self.bc_x1['type'])
+        logger.debug("y0 condition: %s", self.bc_y0['type'])
+        logger.debug("y1 condition: %s", self.bc_y1['type'])
 
         # equation corresponding to forcing function
         self.poisson_function = poisson_function
@@ -101,7 +110,7 @@ class SolverPoissonXY(object):
         mesh points along the Dirichlet boundaries.
         """
         # TODO - your code here
-
+        logger.info("Running dirchlet")
         for k in self.boundary_i:
             # assigns boundary indexes in a with 1, 0 otherwise
             self.a[k,:] = 0.0
@@ -141,7 +150,21 @@ class SolverPoissonXY(object):
         """
         # TODO - your code here
         n = set(range(self.n))
-        internal_i = n - self.boundary_i
+        internal_i = n - self.boundary_i # internal point ind (K)
+        logger.debug("Internal boundary points: %s", internal_i)
+        
+        def stenciler(matrix, kval):
+            matrix[kval, kval] = -4
+            for n in [kval-1, kval+1, kval-self.nx, kval+self.nx]:
+                matrix[kval, n] = 1
+                
+                
+                
+        for k in internal_i:
+            stenciler(self.a, k)
+            
+        logger.debug("internal A matrix:\n%s", np.array2string(self.a, precision =1, suppress_small = True, max_line_width = 120))
+        
 
     def solve(self):
         """
