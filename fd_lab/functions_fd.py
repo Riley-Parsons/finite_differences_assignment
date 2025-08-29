@@ -38,7 +38,11 @@ class SolverPoissonXY(object):
     def __init__(self, xlim, ylim, delta, bc_x0, bc_x1, bc_y0, bc_y1, poisson_function):
 
         # TODO: define the integer number of mesh points (nx, ny, n), including boundaries, based on desired mesh spacing
-
+        #nearest number, can be courser OR finer
+        self.nx = int(round((xlim[1] - xlim[0])/delta +1))
+        self.ny = int(round((ylim[1]-ylim[0])/delta+1))
+        self.n = self.ny * self.nx
+        
         # TODO: calculate the x and y values/coordinates of mesh as one-dimensional numpy arrays
 
         # TODO: calculate the actual mesh spacing in x and y (dx, dy), may differ slightly from delta if not exactly divisible
