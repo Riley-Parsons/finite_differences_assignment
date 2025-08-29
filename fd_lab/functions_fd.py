@@ -1,6 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+import logging
+
+logger = logging.getLogger(__name__)
+
+logger.setLevel(logging.Debug)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s-%(name)s - %(levelname)s-%(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
 
 class SolverPoissonXY(object):
@@ -103,6 +114,11 @@ class SolverPoissonXY(object):
                 
             elif k in Rind and self.bc_x1['type'] == 'dirichlet':
                 self.b[k] = self.bc_x1['function'](self.x[self.nx-1], self.y[k//self.nx])
+                
+        logger.debug("b vector:\n%s", np.array2string(self.b, precision=3, suppress_small=True))
+        logger.debug("A matrix:\n%s", np.array2string(self.a, precision=1, suppress_small=True, max_line_width=120))
+
+
 
 
     def neumann(self):
