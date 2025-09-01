@@ -34,5 +34,8 @@ test_solver = SolverPoissonXY(test_xlim, test_ylim, 0.2, test_bx0, test_bx1, tes
 test_solver.solve()
 print(test_solver.solution)
 
+#
+test_solver.plot_solution()
+
 # TODO: your code below to solve and plot the 2D Poisson equation
 

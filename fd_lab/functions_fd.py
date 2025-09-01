@@ -5,9 +5,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
+ch.setLevel(logging.INFO)
 
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(funcName)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
@@ -228,7 +228,18 @@ class SolverPoissonXY(object):
         Plot the PDE solution.
         """
         # TODO - your code here
-        pass
+        logger.info("Running Plot Solution")
+        X, Y = np.meshgrid(self.x, self.y) # generate coordinates
+        logger.debug("X meshgrid:\n%s", np.array2string(X, precision=3, suppress_small=True, max_line_width=120))
+        logger.debug("Y meshgrid:\n%s", np.array2string(Y, precision=3, suppress_small=True, max_line_width=120))
+        plt.contourf(X, Y, self.solution, levels = 100, cmap = "viridis") #contour f is filled
+        plt.colorbar()
+        plt.xlabel = ("X")
+        plt.ylabel = ("Y")
+        plt.title = ("Mesh solution contour plot")
+        plt.show()
+        
+
 
 
 class SolverHeatXT(object):
