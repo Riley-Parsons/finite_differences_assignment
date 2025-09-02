@@ -659,6 +659,11 @@ class SolverWaveXT(object):
             unm1 = self.solution[n-1, :]
             unp1 = np.copy(un)
             unp1[1:-1] = 2*un[1:-1] - unm1[1:-1] + r2 * (un[0:-2] - 2*un[1:-1] + un[2:])
+            
+            #BC's
+            unp1[0] = self.bc_x0['fuction'](self.x[0], self.t[n+1])
+            unp1[-1] = self.bc_x1['function'](self.x[-1], self.t[n+1])
+            self.solution[n+1, :] = unp1
         
 
     def plot_solution(self, n_lines):
