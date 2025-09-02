@@ -426,7 +426,39 @@ class SolverHeatXT(object):
             a (2D array): coefficient matrix for implicit method (dimension 2 nx by 2 nx)
         """
         # TODO - your code here
-        pass
+        nx = self.nx
+        r = self.r
+        theta = self.theta
+        
+        # build L array
+        L = np.zeros((nx,nx), dtype = float)
+        for i in range(nx):
+            L[i,i] = -2.0
+            if i -1>= 0:
+                L[i,i-1] = 1.0
+            if i+1 < nx:
+                L[i, i+1] = 1.0
+            
+        A = np.zeros((2 *nx, 2 *nx), dtype = float)
+        
+        # top left
+        for i in range(nx):
+            A[i,i] = 1.0
+        
+        # bottom left
+        A[nx:2*nx, 0:nx] = (1.0-theta) * r * L
+        
+        # bottom right
+        A[nx:2*nx, nx:2*nx] = np.eye(nx, dtype = float) - theta * r * L
+        
+        for i in (0, nx-1):
+            row = nx + i
+            A[row, 0:nx] = 0.0
+            A[row, nx:2*nx] = 0.0
+            A[row, nx + i] = 1.0
+            
+        self.A = A
+        return A
 
     def implicit_update_b(self, i_t):
         """
