@@ -473,7 +473,19 @@ class SolverHeatXT(object):
             b (1D array): vector of constants for implicit method (length of 2 nx)
         """
         # TODO - your code here
-        pass
+        nx = self.nx
+        r = self.r
+        theta = self.theta
+        
+        u_n = self.solution[n, :]
+        t_np1 = self.t[n+1]
+        x = self.x
+        b = np.zeros(2*nx, dtype = float)
+        
+        b[0:nx] = u_n
+        bottom = np.array(u_n, dtype = float)
+        
+
 
     def solve_implicit(self):
         """
