@@ -674,6 +674,14 @@ class SolverWaveXT(object):
             n_lines (int): number of time points to plot between t0 and t1 (inclusive)
         """
         # TODO - your code here
-        pass
+        idx = np.linspace(0, self.nt-1, n_lines, dtype = int)
+        plt.figure()
+        for i in idx:
+            plt.plot(self.x, self.solution[i, :], label = f"t={self.t[i]:.3f}")
+        plt.xlabel("x")
+        plt.ylabel("u(x,t)")
+        plt.title("1D wave equation solution")
+        plt.legend()
+        plt.show
 
 
