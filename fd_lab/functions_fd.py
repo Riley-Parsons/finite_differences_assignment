@@ -348,49 +348,52 @@ class SolverHeatXT(object):
     def __init__(self, xlim, tlim, dx, dt, alpha, theta, bc_x0, bc_x1, ic_t0):
 
         # TODO: define the integer number of mesh points, including boundaries, based on desired mesh spacing
-        xmax = xlim[1]
-        xmin = xlim[0]
-        tmax = tlim[1]
-        tmin = tlim[0]
-        
-        self.nx = int(round((xmax - xmin)/dx)) + 1
-        self.nt = int(round((tmax - tmin)/dt)) + 1
-        self.n = self.nx*self.nt
-        
-        # TODO: calculate the x and y values/coordinates of mesh as one-dimensional numpy arrays
+            # Set domain limits
+        xmin, xmax = xlim
+        tmin, tmax = tlim
+
+        # Compute number of spatial and time steps (include endpoints)
+        self.nx = int(round((xmax - xmin) / dx)) + 1
+        self.nt = int(round((tmax - tmin) / dt)) + 1
+        self.n = self.nx * self.nt
+
+        # Generate mesh
         self.x = np.linspace(xmin, xmax, self.nx)
         self.t = np.linspace(tmin, tmax, self.nt)
-        
-        # TODO: calculate the actual mesh spacing in x and y, should be similar or same as the dx and dy arguments
+
+        # Actual mesh spacings
         self.dx = self.x[1] - self.x[0]
         self.dt = self.t[1] - self.t[0]
 
-
-        # set ratio of step sizes, useful for examining numerical stability and implementing method
+        # Parameters
         self.alpha = alpha
-        self.r = self.alpha*self.dt/(self.dx*self.dx)
+        self.r = self.alpha * self.dt / (self.dx ** 2)
         self.theta = theta
 
-        # store the Dirichlet boundary conditions and initial conditions
+        # Store BCs and IC
         self.bc_x0 = bc_x0
         self.bc_x1 = bc_x1
         self.ic_t0 = ic_t0
 
-        # TODO: initialise solution matrix, apply the Dirichlet boundary and initial conditions to it now
-        self.solution = np.zeros((self.nt, self.nx), dtype = float)
-        
-        if (self.ic_t0['type'] == 'initial'):
-            self.solution[0,:] = self.ic_t0['function'](self.x, self.t[0])
-            
-        for ti in self.t:
-            left_vals = np.array([self.bc_x0['function'](self.x[0], ti)], dtype = float)
-            right_vals = np.array([self.bc_x1['function'](self.x[-1], ti)], dtype = float)
-            
-        self.solution[:, 0] = left_vals
-        self.solution[:, -1] = right_vals
-        
-        self.internal_xi = np.arrange(1, self.nx-1)
-        self.internal_ti = np.arrange(1, self.nt-1)
+        # Initialise solution array
+        self.solution = np.zeros((self.nt, self.nx), dtype=float)
+
+        # Apply initial condition at t=0
+        # Apply initial condition at t=0 (scalar-safe)
+        if self.ic_t0['type'] == 'initial':
+            ic_f = self.ic_t0['function']
+            t0 = float(self.t[0])
+            self.solution[0, :] = np.array([float(ic_f(float(xi), t0)) for xi in self.x], dtype=float)
+
+
+        # Apply boundary conditions for all times
+        for i, t_now in enumerate(self.t):
+            self.solution[i, 0]  = self.bc_x0['function'](self.x[0], t_now)
+            self.solution[i, -1] = self.bc_x1['function'](self.x[-1], t_now)
+
+        # Interior indices (optional helper attributes)
+        self.internal_xi = np.arange(1, self.nx - 1)
+        self.internal_ti = np.arange(1, self.nt - 1)
 
     def solve_explicit(self):
         """
@@ -509,54 +512,56 @@ class SolverHeatXT(object):
 
     def solve_implicit(self):
         """
-        Solve the 1D heat equation using an implicit solution method.
+        Solve the 1D heat equation using an implicit solution.
         """
-        # TODO - your code here
-        self.implicit_update_a()
         nx = self.nx
-        
-        # go forwards in time
-        for i_t in range(self.nt - 1):
-            # build b matrix
-            b = self.implicit_update_b(i_t)
-            
-            # solve A * u = b
+        nt = self.nt
+
+        # Build A once (does not change with time)
+        self.implicit_update_a()
+
+        # Iterate in time
+        for n in range(nt - 1):
+            # Build RHS vector for this time step
+            b = self.implicit_update_b(n)
+
+            # Solve the linear system A * y = b
             y = np.linalg.solve(self.A, b)
+
+            # Update solution at new time step (lower half = u^n+1)
+            self.solution[n+1, :] = y[nx:]
             
-            # u^n+1 stored
-            self.solution[i_t + 1, :] = y[nx:]
             
-        
 
     def plot_solution(self, n_lines):
         """
         Plot the solution as a series of 1D line plots of u(x) at different t.
 
         Arguments:
-            n_lines (int): number of time points to plot between t0 and t1 (inclusive)
+            n_lines (int): number of time points to plot between t0 and t1 (inclusive).
         """
-        # TODO - your code here
-        n_lines = max(2, int(n_lines)) # makes sure at least first and last points
-        
-        # get evenly spaced indices, including endpoints
-        if self.nt<= n_lines:
-            idx = np.arrange(self.nt)
+        n_lines = max(2, int(n_lines))  # at least first and last points
+
+        # get evenly spaced time indices including endpoints
+        if self.nt <= n_lines:
+            idx = np.arange(self.nt)
         else:
-            idx = np.unique(np.linspace(0,self.nt-1, n_lines).astype(int))
-            
-            #set endpoints just in case
+            idx = np.linspace(0, self.nt - 1, n_lines, dtype=int)
             idx[0] = 0
             idx[-1] = self.nt - 1
-        
+
         plt.figure()
         for i in idx:
-            plt.plot(self.x, self.solution[i, :], label = f"t = {self.t[i]:.3g}")
-        plt.xlabel("X")
-        plt.ylabel("u(x,t)")
-        plt.title("1D heat equation solution")
+            plt.plot(self.x, self.solution[i, :], label=f"t = {self.t[i]:.3g} s")
+        plt.xlabel("x (m)")
+        plt.ylabel("Temperature u(x,t)")
+        plt.title("1D Heat Equation Solution")
         plt.legend()
         plt.tight_layout()
         plt.show()
+
+            
+        
 
 
 class SolverWaveXT(object):
