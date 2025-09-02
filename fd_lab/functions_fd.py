@@ -107,6 +107,17 @@ class SolverPoissonXY(object):
         self.boundary_i = set(self.Bind+self.Tind+self.Lind+self.Rind) 
         logger.debug("boundary indexes: %s", self.boundary_i)
 
+    def bound_indexer(self, index):
+        """
+        turns boundary indexes to i and j
+        """
+        i = index%self.nx # i index
+        j = index//self.nx # j index
+        
+        return i, j
+        
+        
+
     def dirichlet(self):
         """
         Apply Dirichlet boundary conditions to update the corresponding elements of the A matrix and b vector for the
@@ -115,22 +126,35 @@ class SolverPoissonXY(object):
         # TODO - your code here
         logger.info("Running dirchlet")
         for k in self.boundary_i:
-            # assigns boundary indexes in a with 1, 0 otherwise
-            self.a[k,:] = 0.0
-            self.a[k,k] = 1.0
+
             
             # checks if dirichlet and performs appropriate boundary func for index
+            # bottom row
             if k in self.Bind and self.bc_y0['type'] == 'dirichlet':
+                self.a[k,:] = 0.0
+                self.a[k,k] = 1.0
                 self.b[k] = self.bc_y0["function"](self.x[k%self.nx], self.y[0])
                 
+            #top row
             elif k in self.Tind and self.bc_y1['type'] == 'dirichlet':
+                self.a[k,:] = 0.0
+                self.a[k,k] = 1.0
                 self.b[k] = self.bc_y1['function'](self.x[k%self.nx], self.y[self.ny-1])
-                
+            
+            # left column
             elif k in self.Lind and self.bc_x0['type'] == 'dirichlet':
+                self.a[k,:] = 0.0
+                self.a[k,k] = 1.0
                 self.b[k] = self.bc_x0['function'](self.x[0], self.y[k//self.nx])
-                
+            
+            # right column
             elif k in self.Rind and self.bc_x1['type'] == 'dirichlet':
+                self.a[k,:] = 0.0
+                self.a[k,k] = 1.0
                 self.b[k] = self.bc_x1['function'](self.x[self.nx-1], self.y[k//self.nx])
+                
+            else:
+                logger.info("Dirichlet on Neumman Boundary")
                 
         logger.debug("b vector:\n%s", np.array2string(self.b, precision=3, suppress_small=True))
         logger.debug("A matrix:\n%s", np.array2string(self.a, precision=1, suppress_small=True, max_line_width=120))
@@ -144,8 +168,50 @@ class SolverPoissonXY(object):
         mesh points along the Neumann boundaries.
         """
         # TODO - your code here (Not needed for task 1A)
-        pass
+        for k in self.boundary_i:
+            i, j = self.bound_indexer(k)
 
+            #top row
+            if j == self.ny-1 and (i!= 0 and i != self.nx-1) and self.bc_y1["type"] == "neumann":
+                self.a[k,:] = 0.0
+                self.a[k, k-1] = 1.0
+                self.a[k, k+1]=1.0
+                self.a[k, k] = -4.0
+                self.a[k, k-self.nx] = 2.0
+                
+                self.b[k] = (self.dy**2) * self.poisson_function(self.x[i], self.y[j]) - 2* self.dy * self.bc_y1['function'](self.x[i], self.y[j])
+            
+            # bottom row
+            elif j == 0 and (i!=0 and i != self.nx-1) and self.bc_y0['type'] == "neumann":
+                self.a[k, :] = 0.0
+                self.a[k, k] = -4.0
+                self.a[k, k-1] = 1.0
+                self.a[k, k+1] = 1.0
+                self.a[k, k+self.nx] = 2.0
+            
+            # left column  
+            elif i == 0 and (j != 0 and j != self.ny-1) and self.bc_x0['type'] == 'neumann':
+                self.a[k,:] = 0.0
+                self.a[k,k] = -4.0
+                self.a[k,k+1] = 2
+                self.a[k, k-self.nx] = 1
+                self.a[k,k+self.nx] = 1
+            
+            # right column    
+            elif i == self.nx-1 and j!=0 and j!= self.ny-1 and self.bc_x1['type'] == 'neumann':
+                self.a[k, :] = 0.0
+                self.a[k,k] = -4
+                self.a[k, k-1] = 2.0
+                self.a[k, k+self.nx] = 1
+                self.a[k, k-self.nx] = 1
+            
+
+
+                
+            
+            
+        
+     
     def internal(self):
         """
         Apply FD stencil and Poisson equation to update the corresponding elements of the A matrix and b vector for the
