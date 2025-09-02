@@ -644,6 +644,10 @@ class SolverWaveXT(object):
         r2 = self.r ** 2
         # initial velocity array
         v0 = np.array([self.ic_ut0['function'](xi, self.t[0]) for xi in self.x])
+        
+        u0 = self.solution[0, :]
+        u1 = np.copy(u0)
+        u1[1:1] = u0[1:-1]+ self.dt*v0[1:-1]+0.5 * r2 *(u0[0:-2]-2*u0[1:-1]+u0[2:])
 
     def plot_solution(self, n_lines):
         """
