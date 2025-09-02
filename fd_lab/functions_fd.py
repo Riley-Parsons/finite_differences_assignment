@@ -536,7 +536,19 @@ class SolverHeatXT(object):
             n_lines (int): number of time points to plot between t0 and t1 (inclusive)
         """
         # TODO - your code here
-        pass
+        n_lines = max(2, int(n_lines)) # makes sure at least first and last points
+        
+        # get evenly spaced indices, including endpoints
+        if self.nt<= n_lines:
+            idx = np.arrange(self.nt)
+        else:
+            idx = np.unique(np.linspace(0,self.nt-1, n_lines).astype(int))
+            
+            #set endpoints just in case
+            idx[0] = 0
+            idx[-1] = self.nt - 1
+        
+
 
 
 class SolverWaveXT(object):
