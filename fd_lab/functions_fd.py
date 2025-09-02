@@ -451,6 +451,7 @@ class SolverHeatXT(object):
         # bottom right
         A[nx:2*nx, nx:2*nx] = np.eye(nx, dtype = float) - theta * r * L
         
+        # dirichlet at new time
         for i in (0, nx-1):
             row = nx + i
             A[row, 0:nx] = 0.0
