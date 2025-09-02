@@ -263,9 +263,9 @@ class SolverPoissonXY(object):
 
         # TODO - your code here
         logger.info("Running solve")
-        self.dirichlet()
+        self.neumann()
         self.internal()
-        
+        self.dirichlet()
         u = np.linalg.solve(self.a, self.b)
         
         logger.debug("U matrix: %s", np.array2string(u, precision = 3, suppress_small = True))
