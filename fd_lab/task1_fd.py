@@ -39,6 +39,6 @@ def test_func(x,y):
 
 # TODO: your code below to solve and plot the 2D Poisson equation
 
-task1 = SolverPoissonXY(xlim, ylim, 0.5, bc_x0=bc_x0, bc_x1=bc_x1, bc_y0=bc_y0, bc_y1=bc_y1, poisson_function=poisson)
+task1 = SolverPoissonXY(xlim, ylim, 0.1, bc_x0=bc_x0, bc_x1=bc_x1, bc_y0=bc_y0, bc_y1=bc_y1, poisson_function=poisson)
 task1.solve()
 task1.plot_solution()

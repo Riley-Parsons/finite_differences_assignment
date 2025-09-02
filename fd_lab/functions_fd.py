@@ -282,7 +282,7 @@ class SolverPoissonXY(object):
             
         logger.debug("Internal Values: %s", intvals)
         
-        logger.info("Internal index: %s",ijindex)
+        logger.debug("Internal index: %s",ijindex)
         
         logger.debug("Internal X Y values: %s", [[self.dx*val for val in sublist] for sublist in ijindex])
         self.solution = np.reshape(u, (self.ny, self.nx))
@@ -301,11 +301,14 @@ class SolverPoissonXY(object):
         X, Y = np.meshgrid(self.x, self.y) # generate coordinates
         logger.debug("X meshgrid:\n%s", np.array2string(X, precision=3, suppress_small=True, max_line_width=120))
         logger.debug("Y meshgrid:\n%s", np.array2string(Y, precision=3, suppress_small=True, max_line_width=120))
-        plt.contourf(X, Y, self.solution, levels = 100, cmap = "viridis") #contour f is filled
-        plt.colorbar()
-        plt.xlabel = ("X")
-        plt.ylabel = ("Y")
-        plt.title = ("Mesh solution contour plot")
+        
+        fig, ax = plt.subplots()
+        c = ax.contourf(X, Y, self.solution, levels = 100, cmap = "viridis")
+        fig.colorbar(c, ax = ax)
+        
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_title("Mesh solution contour plot")
         plt.show()
         
 
