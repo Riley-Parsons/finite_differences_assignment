@@ -30,12 +30,15 @@ test_ylim = np.array([0,1])
 def test_func(x,y):
     return 6*x*y*(1-y)-2*x**3
 
-test_solver = SolverPoissonXY(test_xlim, test_ylim, 0.2, test_bx0, test_bx1, test_by0, test_by1, test_func)
-test_solver.solve()
-print(test_solver.solution)
+#test_solver = SolverPoissonXY(test_xlim, test_ylim, 0.2, test_bx0, test_bx1, test_by0, test_by1, test_func)
+#test_solver.solve()
+#print(test_solver.solution)
 
 #
-test_solver.plot_solution()
+#test_solver.plot_solution()
 
 # TODO: your code below to solve and plot the 2D Poisson equation
 
+task1 = SolverPoissonXY(xlim, ylim, 0.5, bc_x0=bc_x0, bc_x1=bc_x1, bc_y0=bc_y0, bc_y1=bc_y1, poisson_function=poisson)
+task1.solve()
+task1.plot_solution()

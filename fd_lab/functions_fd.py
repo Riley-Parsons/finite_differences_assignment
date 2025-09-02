@@ -153,8 +153,7 @@ class SolverPoissonXY(object):
                 self.a[k,k] = 1.0
                 self.b[k] = self.bc_x1['function'](self.x[self.nx-1], self.y[k//self.nx])
                 
-            else:
-                logger.info("Dirichlet on Neumman Boundary")
+
                 
         logger.debug("b vector:\n%s", np.array2string(self.b, precision=3, suppress_small=True))
         logger.debug("A matrix:\n%s", np.array2string(self.a, precision=1, suppress_small=True, max_line_width=120))
@@ -168,6 +167,7 @@ class SolverPoissonXY(object):
         mesh points along the Neumann boundaries.
         """
         # TODO - your code here (Not needed for task 1A)
+        logger.info("Running neumann")
         for k in self.boundary_i:
             i, j = self.bound_indexer(k)
 
@@ -209,7 +209,8 @@ class SolverPoissonXY(object):
             
                 self.b[k] = (self.dx**2) * self.poisson_function(self.x[i], self.y[j]) - 2* self.dx * self.bc_x1['function'](self.x[i], self.y[j])       
 
-                
+        logger.debug("b vector:\n%s", np.array2string(self.b, precision=3, suppress_small=True))
+        logger.debug("A matrix:\n%s", np.array2string(self.a, precision=1, suppress_small=True, max_line_width=120))
             
             
         
