@@ -548,7 +548,15 @@ class SolverHeatXT(object):
             idx[0] = 0
             idx[-1] = self.nt - 1
         
-
+        plt.figure()
+        for i in idx:
+            plt.plot(self.x, self.solution[i, :], label = f"t = {self.t[i]:.3g}")
+        plt.xlabel("X")
+        plt.ylabel("u(x,t)")
+        plt.title("1D heat equation solution")
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
 
 
 class SolverWaveXT(object):
