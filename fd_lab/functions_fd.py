@@ -485,7 +485,12 @@ class SolverHeatXT(object):
         b[0:nx] = u_n
         bottom = np.array(u_n, dtype = float)
         
-
+        if nx >= 3:
+            coeff = (1.0 - theta) * r
+            # interior is
+            for i in range(1, nx-1):
+                lap_u = (u_n[i-1] - 2.0 * u_n[i] + u_n[i +1])
+                bottom[i] = u_n[i] + coeff * lap_u
 
     def solve_implicit(self):
         """
