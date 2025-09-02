@@ -648,6 +648,12 @@ class SolverWaveXT(object):
         u0 = self.solution[0, :]
         u1 = np.copy(u0)
         u1[1:1] = u0[1:-1]+ self.dt*v0[1:-1]+0.5 * r2 *(u0[0:-2]-2*u0[1:-1]+u0[2:])
+        
+        # enforce BC's
+        u1[0] = self.bc_x0['function'](self.x[0], self.t[1])
+        u1[-1] = self.bc_x1['function'](self.x[-1], self.t[1])
+        self.solution[1, :] = u1
+        
 
     def plot_solution(self, n_lines):
         """
