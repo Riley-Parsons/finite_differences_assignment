@@ -491,6 +491,17 @@ class SolverHeatXT(object):
             for i in range(1, nx-1):
                 lap_u = (u_n[i-1] - 2.0 * u_n[i] + u_n[i +1])
                 bottom[i] = u_n[i] + coeff * lap_u
+                
+            else:
+                pass
+        b[nx:2 * nx] = bottom # interior RHS
+        
+        #dirchlet conditions
+        b[nx + 0] = float(self.bc_x0['function'](x[0], t_np1))
+        b[nx + nx-1] = float(self.bc_x1['function'](x[nx-1], t_np1))
+        
+        return b
+        
 
     def solve_implicit(self):
         """
