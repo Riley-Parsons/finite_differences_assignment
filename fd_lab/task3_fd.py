@@ -13,3 +13,6 @@ tlim = np.array([0.0, 1.0])
 dx = 0.01
 dt = 0.005
 c = 1.0
+solver = SolverWaveXT(xlim, tlim, dx, dt, c, x0, x1, t0, dt0)
+solver.solve_explicit()
+solver.plot_solution(n_lines=6)
