@@ -477,8 +477,8 @@ class SolverHeatXT(object):
         r = self.r
         theta = self.theta
         
-        u_n = self.solution[n, :]
-        t_np1 = self.t[n+1]
+        u_n = self.solution[i_t, :]
+        t_np1 = self.t[i_t+1]
         x = self.x
         b = np.zeros(2*nx, dtype = float)
         
@@ -492,8 +492,9 @@ class SolverHeatXT(object):
                 lap_u = (u_n[i-1] - 2.0 * u_n[i] + u_n[i +1])
                 bottom[i] = u_n[i] + coeff * lap_u
                 
-            else:
-                pass
+        else:
+            pass
+        
         b[nx:2 * nx] = bottom # interior RHS
         
         #dirchlet conditions
@@ -501,6 +502,9 @@ class SolverHeatXT(object):
         b[nx + nx-1] = float(self.bc_x1['function'](x[nx-1], t_np1))
         
         return b
+    
+    
+    
         
 
     def solve_implicit(self):
