@@ -8,3 +8,8 @@ t0 = {'type': 'initial', 'function': lambda x, t: np.sin(3*np.pi*x) + x/2}
 dt0 = {'type': 'initial_derivative', 'function': lambda x, t: 0.}
 
 # TODO - your code here to solve and plot the 1D wave equation
+xlim = np.array([0.0, 1.0])
+tlim = np.array([0.0, 1.0])
+dx = 0.01
+dt = 0.005
+c = 1.0
