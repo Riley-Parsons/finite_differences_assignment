@@ -600,11 +600,20 @@ class SolverWaveXT(object):
     def __init__(self, xlim, tlim, dx, dt, c, bc_x0, bc_x1, ic_t0, ic_dt0):
 
         # TODO: define the integer number of mesh points, including boundaries, based on desired mesh spacing
-
+        xmin, xmax = xlim
+        tmin, tmax = tlim
+        self.nx = int(round((xmax - xmin) / dx)) + 1
+        self.nt = int(round((tmax - tmin) / dt)) + 1
+        
+        
         # TODO: calculate the x and y values/coordinates of mesh as one-dimensional numpy arrays
+        self.x = np.linspace(xmin, xmax, self.nx)
+        self.t = np.linspace(tmin, tmax, self.nt)
 
         # TODO: calculate the actual mesh spacing in x and y, should be similar or same as the dx and dy arguments
-
+        self.dx = self.x[1] - self.x[0]
+        self.dt = self.t[1] - self.t[0]
+        
         # set ratio of step sizes, useful for examining numerical stability and implementing method
         self.c = c
         self.r = self.c * self.dt/self.dx
@@ -616,7 +625,17 @@ class SolverWaveXT(object):
         self.ic_dt0 = ic_dt0
 
         # TODO: initialise solution matrix and apply boundary conditions
+        # solution array
+        self.solution = np.zeros((self.nt, self.nx))
 
+        # apply initial displacement
+        self.solution[0, :] = np.array([ic_u0['function'](xi, self.t[0]) for xi in self.x])
+        # apply BCs at t=0
+        self.solution[0, 0] = self.bc_x0['function'](self.x[0], self.t[0])
+        self.solution[0, -1] = self.bc_x1['function'](self.x[-1], self.t[0])
+        
+        
+        
     def solve_explicit(self):
         """
         Solve the 1D wave equation using an explicit method.
