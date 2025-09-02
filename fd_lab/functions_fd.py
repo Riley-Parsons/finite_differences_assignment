@@ -629,7 +629,7 @@ class SolverWaveXT(object):
         self.solution = np.zeros((self.nt, self.nx))
 
         # apply initial displacement
-        self.solution[0, :] = np.array([ic_u0['function'](xi, self.t[0]) for xi in self.x])
+        self.solution[0, :] = np.array([ic_t0['function'](xi, self.t[0]) for xi in self.x])
         # apply BCs at t=0
         self.solution[0, 0] = self.bc_x0['function'](self.x[0], self.t[0])
         self.solution[0, -1] = self.bc_x1['function'](self.x[-1], self.t[0])
@@ -643,11 +643,11 @@ class SolverWaveXT(object):
         # TODO - your code here
         r2 = self.r ** 2
         # initial velocity array
-        v0 = np.array([self.ic_ut0['function'](xi, self.t[0]) for xi in self.x])
+        v0 = np.array([self.ic_dt0['function'](xi, self.t[0]) for xi in self.x])
         
         u0 = self.solution[0, :]
         u1 = np.copy(u0)
-        u1[1:1] = u0[1:-1]+ self.dt*v0[1:-1]+0.5 * r2 *(u0[0:-2]-2*u0[1:-1]+u0[2:])
+        u1[1:-1] = u0[1:-1]+ self.dt*v0[1:-1]+0.5 * r2 *(u0[0:-2]-2*u0[1:-1]+u0[2:])
         
         # enforce BC's
         u1[0] = self.bc_x0['function'](self.x[0], self.t[1])
@@ -661,7 +661,7 @@ class SolverWaveXT(object):
             unp1[1:-1] = 2*un[1:-1] - unm1[1:-1] + r2 * (un[0:-2] - 2*un[1:-1] + un[2:])
             
             #BC's
-            unp1[0] = self.bc_x0['fuction'](self.x[0], self.t[n+1])
+            unp1[0] = self.bc_x0['function'](self.x[0], self.t[n+1])
             unp1[-1] = self.bc_x1['function'](self.x[-1], self.t[n+1])
             self.solution[n+1, :] = unp1
         
