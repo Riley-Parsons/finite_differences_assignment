@@ -512,7 +512,12 @@ class SolverHeatXT(object):
         Solve the 1D heat equation using an implicit solution method.
         """
         # TODO - your code here
-        pass
+        self.implicit_update_a()
+        nx = self.nx
+        
+        # go forwards in time
+        for i_t in range(self.nt - 1):
+            b = self.implicit_update_b(i_t)
 
     def plot_solution(self, n_lines):
         """
