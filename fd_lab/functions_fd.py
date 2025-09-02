@@ -517,7 +517,16 @@ class SolverHeatXT(object):
         
         # go forwards in time
         for i_t in range(self.nt - 1):
+            # build b matrix
             b = self.implicit_update_b(i_t)
+            
+            # solve A * u = b
+            y = np.linalg.solve(self.A, b)
+            
+            # u^n+1 stored
+            self.solution[i_t + 1, :] = y[nx:]
+            
+        
 
     def plot_solution(self, n_lines):
         """
