@@ -388,13 +388,31 @@ class SolverHeatXT(object):
             
         self.solution[:, 0] = left_vals
         self.solution[:, -1] = right_vals
+        
+        self.internal_xi = np.arrange(1, self.nx-1)
+        self.internal_ti = np.arrange(1, self.nt-1)
 
     def solve_explicit(self):
         """
         Solve the 1D heat equation using an explicit solution method.
         """
         # TODO - your code here
-        pass
+        r = self.r
+        
+        if not (0 < r <= 0.5):
+            logger.critical("Explicit solution unstable unless 0<r<=0.5: %s", r)
+            
+        for n in range(self.nt -1):
+            u_n = self.solution[n, :]
+            t_next = self.t[n+1]
+            
+            # dirichlet at next time
+            self.solution[n+1, 0] = self.bc_x0['function'](self.x[0], t_next)
+            self.solution[n+1, -1] = self.bc_x1['function'](self.x[-1], t_next)
+
+
+
+       
 
     def implicit_update_a(self):
         """
