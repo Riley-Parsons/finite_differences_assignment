@@ -409,7 +409,9 @@ class SolverHeatXT(object):
             # dirichlet at next time
             self.solution[n+1, 0] = self.bc_x0['function'](self.x[0], t_next)
             self.solution[n+1, -1] = self.bc_x1['function'](self.x[-1], t_next)
-
+            
+            # update interior points
+            self.solution[n+1, 1:-1] = r *u_n[0:-2] + (1-2*r) * u_n[1:-1] + self.r * u_n[2:]
 
 
        
