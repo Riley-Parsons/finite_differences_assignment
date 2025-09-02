@@ -641,7 +641,9 @@ class SolverWaveXT(object):
         Solve the 1D wave equation using an explicit method.
         """
         # TODO - your code here
-        pass
+        r2 = self.r ** 2
+        # initial velocity array
+        v0 = np.array([self.ic_ut0['function'](xi, self.t[0]) for xi in self.x])
 
     def plot_solution(self, n_lines):
         """
