@@ -189,6 +189,7 @@ class SolverPoissonXY(object):
                 self.a[k, k+1] = 1.0
                 self.a[k, k+self.nx] = 2.0
             
+                self.b[k] = (self.dy**2) * self.poisson_function(self.x[i], self.y[j]) - 2* self.dy * self.bc_y0['function'](self.x[i], self.y[j])
             # left column  
             elif i == 0 and (j != 0 and j != self.ny-1) and self.bc_x0['type'] == 'neumann':
                 self.a[k,:] = 0.0
@@ -196,7 +197,8 @@ class SolverPoissonXY(object):
                 self.a[k,k+1] = 2
                 self.a[k, k-self.nx] = 1
                 self.a[k,k+self.nx] = 1
-            
+                
+                self.b[k] = (self.dx**2) * self.poisson_function(self.x[i], self.y[j]) - 2* self.dx * self.bc_x0['function'](self.x[i], self.y[j])            
             # right column    
             elif i == self.nx-1 and j!=0 and j!= self.ny-1 and self.bc_x1['type'] == 'neumann':
                 self.a[k, :] = 0.0
@@ -205,7 +207,7 @@ class SolverPoissonXY(object):
                 self.a[k, k+self.nx] = 1
                 self.a[k, k-self.nx] = 1
             
-
+                self.b[k] = (self.dx**2) * self.poisson_function(self.x[i], self.y[j]) - 2* self.dx * self.bc_x1['function'](self.x[i], self.y[j])       
 
                 
             
