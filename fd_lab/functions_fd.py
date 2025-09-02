@@ -401,7 +401,8 @@ class SolverHeatXT(object):
         
         if not (0 < r <= 0.5):
             logger.critical("Explicit solution unstable unless 0<r<=0.5: %s", r)
-            
+        
+        # iterate over time to get next steps in time
         for n in range(self.nt -1):
             u_n = self.solution[n, :]
             t_next = self.t[n+1]
