@@ -682,6 +682,6 @@ class SolverWaveXT(object):
         plt.ylabel("u(x,t)")
         plt.title("1D wave equation solution")
         plt.legend()
-        plt.show
+        plt.show()
 
 
