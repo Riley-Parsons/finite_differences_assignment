@@ -353,8 +353,8 @@ class SolverHeatXT(object):
         tmax = tlim[1]
         tmin = tlim[0]
         
-        self.nx = int(round((xmax - xmin)/dx))
-        self.nt = int(round((tmax - tmin)/dt))
+        self.nx = int(round((xmax - xmin)/dx)) + 1
+        self.nt = int(round((tmax - tmin)/dt)) + 1
         self.n = self.nx*self.nt
         
         # TODO: calculate the x and y values/coordinates of mesh as one-dimensional numpy arrays
@@ -377,7 +377,17 @@ class SolverHeatXT(object):
         self.ic_t0 = ic_t0
 
         # TODO: initialise solution matrix, apply the Dirichlet boundary and initial conditions to it now
-        self.solution = np.zeros(self.n)
+        self.solution = np.zeros((self.nt, self.nx), dtype = float)
+        
+        if (self.ic_t0['type'] == 'initial'):
+            self.solution[0,:] = self.ic_t0['function'](self.x, self.t[0])
+            
+        for ti in self.t:
+            left_vals = np.array([self.bc_x0['function'](self.x[0], ti)], dtype = float)
+            right_vals = np.array([self.bc_x1['function'](self.x[-1], ti)], dtype = float)
+            
+        self.solution[:, 0] = left_vals
+        self.solution[:, -1] = right_vals
 
     def solve_explicit(self):
         """
